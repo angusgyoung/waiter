@@ -1,0 +1,22 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Build container image
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get release tag
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v2.6.1
+        with:
+          push: true
+          tags: angusgyoung/waiter:${{ env.RELEASE_VERSION }}
