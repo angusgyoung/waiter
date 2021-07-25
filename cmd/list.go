@@ -13,11 +13,12 @@ var listCmd = &cobra.Command{
 	Short: "List tasks",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("list called")
+		internal.Log.Debug("Listing tasks")
+
 		var tasks []task.Task = internal.Conf.Tasks
 
 		for _, task := range tasks {
-			fmt.Printf("Name %v, command %v", task.Name, task.Command)
+			fmt.Println(task.Name, task.Command)
 		}
 	},
 }

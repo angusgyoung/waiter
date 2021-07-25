@@ -1,9 +1,8 @@
 package internal
 
 import (
-	"fmt"
-
 	"github.com/angusgyoung/waiter/internal/task"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -18,6 +17,11 @@ func LoadConfig() {
 	err := viper.Unmarshal(&Conf)
 
 	if err != nil {
-		fmt.Println("Failed to unmarshal config", err)
+		Log.WithFields(logrus.Fields{
+			"Error": err,
+			"Path":  viper.ConfigFileUsed(),
+		}).Fatal("Failed to unmarshall config file")
 	}
+
+	Log.WithField("Config", Conf).Debug("Loaded config")
 }

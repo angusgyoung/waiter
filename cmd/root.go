@@ -1,16 +1,17 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/angusgyoung/waiter/internal"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
 	"github.com/spf13/viper"
 )
 
 var cfgFile string
+var logLevel string
 
 var rootCmd = &cobra.Command{
 	Use:   "waiter",
@@ -26,9 +27,21 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.waiter.yaml)")
+	rootCmd.PersistentFlags().StringVar(&logLevel, "level", "", "log level")
 }
 
 func initConfig() {
+	if logLevel != "" {
+		level, err := logrus.ParseLevel(logLevel)
+
+		if err != nil {
+			internal.Log.WithField("level", logLevel).Error("Failed to determine log level from argument, defaulting to warn")
+			internal.Log.SetLevel(logrus.WarnLevel)
+		}
+
+		internal.Log.SetLevel(level)
+	}
+
 	if cfgFile != "" {
 		viper.SetConfigFile(cfgFile)
 	} else {
@@ -43,7 +56,7 @@ func initConfig() {
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+		internal.Log.WithField("Path", viper.ConfigFileUsed()).Debug("Read config file")
 	}
 
 	internal.LoadConfig()
