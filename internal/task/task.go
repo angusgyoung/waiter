@@ -4,6 +4,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -12,9 +13,11 @@ type Task struct {
 	Name    string `yaml:"name"`
 	Command string `yaml:"command"`
 	Output  string `yaml:"output"`
+	Count   int    `yaml:"count"`
+	Delay   int    `yaml:"delay"`
 }
 
-func (t Task) Execute() ([]byte, error) {
+func (t Task) Execute() error {
 	log.WithFields(log.Fields{
 		"Name":    t.Name,
 		"Command": t.Command,
@@ -27,23 +30,39 @@ func (t Task) Execute() ([]byte, error) {
 	name := components[0]
 	args := components[1:]
 
-	command := exec.Command(name, args...)
+	var err error
 
-	out, err := command.Output()
+	for i := 0; i < t.Count; i++ {
+		command := exec.Command(name, args...)
 
-	// We must be writing to a file
-	if t.Output != "" {
-		log.WithField("Filename", t.Output).Trace("Writing task output to file")
+		out, err := command.Output()
 
-		file, err := os.OpenFile(t.Output, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
-		checkFileWriteErr(t.Output, err)
-		defer file.Close()
+		// Terminate execution loop on error.
+		// In future we might allow continue-on-error
+		if err != nil {
+			break
+		}
 
-		_, err = file.Write(out)
-		checkFileWriteErr(t.Output, err)
+		// We must be writing to a file
+		if t.Output != "" {
+			log.WithField("Filename", t.Output).Trace("Writing task output to file")
+
+			file, err := os.OpenFile(t.Output, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+			checkFileWriteErr(t.Output, err)
+			defer file.Close()
+
+			_, err = file.Write(out)
+			checkFileWriteErr(t.Output, err)
+		}
+
+		// Don't delay if we are on our final execution
+		if t.Delay != 0 && i != t.Count-1 {
+			time.Sleep(time.Duration(t.Delay) * time.Millisecond)
+		}
+
 	}
 
-	return out, err
+	return err
 }
 
 func checkFileWriteErr(fileName string, err error) {

@@ -10,14 +10,11 @@ func RunTask(taskName string) {
 		return
 	}
 
-	out, err := task.Execute()
+	err = task.Execute()
 
 	if err != nil {
 		log.WithError(err).Error("Failed to execute task")
 	}
 
-	log.WithFields(log.Fields{
-		"Name":   task.Name,
-		"Output": string(out),
-	}).Trace("Command executed successfully")
+	log.WithField("Name", task.Name).Trace("Command executed successfully")
 }

@@ -29,6 +29,10 @@ func LoadConfig() {
 	for i, task := range Conf.Tasks {
 		// Ensure task names are lower kebab-cased
 		Conf.Tasks[i].Name = strings.ToLower(strings.ReplaceAll(task.Name, " ", "-"))
+		if task.Count == 0 {
+			// If no count is set default to 1
+			Conf.Tasks[i].Count = 1
+		}
 	}
 
 	log.WithField("Config", Conf).Debug("Loaded config")
@@ -41,5 +45,5 @@ func GetTaskDefinition(taskName string) (*task.Task, error) {
 		}
 	}
 
-	return nil, fmt.Errorf("couldn't find task with name \"%v\"", taskName)
+	return nil, fmt.Errorf("couldn't find task with name '%v'", taskName)
 }

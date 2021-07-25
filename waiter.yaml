@@ -1,6 +1,8 @@
 # Sample configuration
 
 tasks:
-  - name: Say Hello
-    command: "echo hello"
+  - name: date
+    command: "date"
     output: out.txt
+    count: 2
+    delay: 5000
