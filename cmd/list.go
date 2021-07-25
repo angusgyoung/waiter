@@ -6,6 +6,7 @@ import (
 	"github.com/angusgyoung/waiter/internal"
 	"github.com/angusgyoung/waiter/internal/task"
 	"github.com/jedib0t/go-pretty/v6/table"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -14,7 +15,7 @@ var listCmd = &cobra.Command{
 	Short: "List tasks",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		internal.Log.Debug("Listing tasks")
+		log.Debug("Listing tasks")
 
 		var tasks []task.Task = internal.Conf.Tasks
 

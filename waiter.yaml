@@ -2,4 +2,4 @@
 
 tasks:
   - name: Say Hello
-    command: "echo 'hello world'"
+    command: "echo hello"

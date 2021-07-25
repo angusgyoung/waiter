@@ -5,6 +5,7 @@ import (
 
 	"github.com/angusgyoung/waiter/internal"
 	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
 	"github.com/spf13/viper"
@@ -35,11 +36,11 @@ func initConfig() {
 		level, err := logrus.ParseLevel(logLevel)
 
 		if err != nil {
-			internal.Log.WithField("level", logLevel).Error("Failed to determine log level from argument, defaulting to warn")
-			internal.Log.SetLevel(logrus.WarnLevel)
+			log.WithField("level", logLevel).Error("Failed to determine log level from argument, defaulting to warn")
+			log.SetLevel(logrus.WarnLevel)
 		}
 
-		internal.Log.SetLevel(level)
+		log.SetLevel(level)
 	}
 
 	if cfgFile != "" {
@@ -56,7 +57,7 @@ func initConfig() {
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err == nil {
-		internal.Log.WithField("Path", viper.ConfigFileUsed()).Debug("Read config file")
+		log.WithField("Path", viper.ConfigFileUsed()).Debug("Read config file")
 	}
 
 	internal.LoadConfig()
