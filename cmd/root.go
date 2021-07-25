@@ -14,24 +14,37 @@ import (
 var cfgFile string
 var logLevel string
 
+var (
+	VersionNumber string
+	BuildDate     string
+)
+
 var rootCmd = &cobra.Command{
 	Use:   "waiter",
 	Short: "Runs your tasks so you don't have to.",
-	Long: `Waiter is a task runner, that exeutes simple or complex
-	tasks, with support for batching, retries and schedules.`,
+	Long: `Waiter is a task runner, that exeutes simple or 
+	complex tasks, with support for batching, retries and schedules.`,
 }
 
 func Execute() {
+	rootCmd.Version = VersionNumber
 	cobra.CheckErr(rootCmd.Execute())
 }
 
 func init() {
 	cobra.OnInitialize(initConfig)
+
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.waiter.yaml)")
 	rootCmd.PersistentFlags().StringVar(&logLevel, "level", "", "log level")
+
 }
 
 func initConfig() {
+	log.WithFields(log.Fields{
+		"Version":   VersionNumber,
+		"BuildDate": BuildDate,
+	}).Debug("Initialising waiter")
+
 	if logLevel != "" {
 		level, err := logrus.ParseLevel(logLevel)
 

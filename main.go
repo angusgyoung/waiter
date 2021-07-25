@@ -17,6 +17,14 @@ package main
 
 import "github.com/angusgyoung/waiter/cmd"
 
+var (
+	Version string
+	Build   string
+)
+
 func main() {
+	cmd.VersionNumber = Version
+	cmd.BuildDate = Build
+
 	cmd.Execute()
 }
