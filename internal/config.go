@@ -26,8 +26,8 @@ func LoadConfig() {
 		}).Fatal("Failed to unmarshall config file")
 	}
 
-	// Ensure task names are lower kebab-cased
 	for i, task := range Conf.Tasks {
+		// Ensure task names are lower kebab-cased
 		Conf.Tasks[i].Name = strings.ToLower(strings.ReplaceAll(task.Name, " ", "-"))
 	}
 

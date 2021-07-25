@@ -1,6 +1,7 @@
 package task
 
 import (
+	"os"
 	"os/exec"
 	"strings"
 
@@ -10,6 +11,7 @@ import (
 type Task struct {
 	Name    string `yaml:"name"`
 	Command string `yaml:"command"`
+	Output  string `yaml:"output"`
 }
 
 func (t Task) Execute() ([]byte, error) {
@@ -26,5 +28,26 @@ func (t Task) Execute() ([]byte, error) {
 	args := components[1:]
 
 	command := exec.Command(name, args...)
-	return command.Output()
+
+	out, err := command.Output()
+
+	// We must be writing to a file
+	if t.Output != "" {
+		log.WithField("Filename", t.Output).Trace("Writing task output to file")
+
+		file, err := os.OpenFile(t.Output, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+		checkFileWriteErr(t.Output, err)
+		defer file.Close()
+
+		_, err = file.Write(out)
+		checkFileWriteErr(t.Output, err)
+	}
+
+	return out, err
+}
+
+func checkFileWriteErr(fileName string, err error) {
+	if err != nil {
+		log.WithField("Filename", fileName).WithError(err).Fatal("Couldn't write task output to file")
+	}
 }

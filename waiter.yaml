@@ -3,3 +3,4 @@
 tasks:
   - name: Say Hello
     command: "echo hello"
+    output: out.txt
