@@ -1,10 +1,11 @@
 package cmd
 
 import (
-	"fmt"
+	"os"
 
 	"github.com/angusgyoung/waiter/internal"
 	"github.com/angusgyoung/waiter/internal/task"
+	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
 )
 
@@ -17,9 +18,19 @@ var listCmd = &cobra.Command{
 
 		var tasks []task.Task = internal.Conf.Tasks
 
-		for _, task := range tasks {
-			fmt.Println(task.Name, task.Command)
+		if len(tasks) > 0 {
+			t := table.NewWriter()
+			t.SetStyle(table.StyleLight)
+			t.SetOutputMirror(os.Stdout)
+			t.AppendHeader(table.Row{"#", "Name", "Command"})
+
+			for i, task := range tasks {
+				t.AppendRow([]interface{}{i, task.Name, task.Command})
+			}
+
+			t.Render()
 		}
+
 	},
 }
 
