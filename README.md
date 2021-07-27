@@ -4,6 +4,8 @@
 
 [![Container build](https://github.com/angusgyoung/waiter/actions/workflows/build-container.yml/badge.svg)](https://github.com/angusgyoung/waiter/actions/workflows/build-container.yml)
 
+[![CodeQL](https://github.com/angusgyoung/waiter/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/angusgyoung/waiter/actions/workflows/codeql-analysis.yml)
+
 Waiter is a cli for automating tasks, with support for retries, batching and templating.
 
 ## Features
